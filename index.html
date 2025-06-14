@@ -200,7 +200,6 @@
                 <thead>
                     <tr>
                         <th>期数</th>
-                        <th>还款日期</th>
                         <th>月供</th>
                         <th>本金</th>
                         <th>利息</th>
@@ -308,7 +307,6 @@
                 row.innerHTML = `
                     <td class="${rowClass}">${item.period}</td>
                     <td>${dateStr}</td>
-                    <td>${item.payment.toFixed(2)}</td>
                     <td>${item.principal.toFixed(2)}</td>
                     <td>${item.interest.toFixed(2)}</td>
                     <td>${item.balance.toFixed(2)}</td>
