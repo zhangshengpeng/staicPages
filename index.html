@@ -9,7 +9,7 @@
             font-family: 'Microsoft YaHei', Arial, sans-serif;
             max-width: 900px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 6px;
             background-color: #f8f9fa;
             color: #333;
             line-height: 1.6;
@@ -124,7 +124,7 @@
             font-weight: bold;
         }
         .repayment-table td {
-            padding: 10px;
+            padding: 6px;
             text-align: center;
             border-bottom: 1px solid #ddd;
         }
@@ -188,7 +188,7 @@
                     <span class="result-value highlight" id="twoYearInterest">--</span>
                 </div>
                 <div class="result-row">
-                    <span class="result-label">2年节省利息：</span>
+                    <span class="result-label">2年提前还款节省利息：</span>
                     <span class="result-value highlight" id="interestSaved">--</span>
                 </div>
             </div>
@@ -244,8 +244,7 @@
             // 计算2年还款明细和总利息
             const twoYearDetails = calculateRepaymentDetails(loanAmount, monthlyRate, 60, wanCoefficient); // 计算60期但只显示前24期
             const twoYearInterest = twoYearDetails.details.slice(0, 24).reduce((sum, item) => sum + item.interest, 0);
-            const interestSaved = fiveYearInterest - twoYearInterest - 
-                                twoYearDetails.details[23].balance * (fiveYearInterest / loanAmount);
+            const interestSaved = fiveYearInterest - twoYearInterest
             
             // 显示结果
             document.getElementById('monthlyPayment').textContent = fiveYearMonthlyPayment.toFixed(2) + "元";
@@ -291,7 +290,7 @@
             };
         }
 
-        // 显示还款明细表格11
+        // 显示还款明细表格
         function displayRepaymentDetails(details, loanAmount) {
             const tableBody = document.getElementById('repaymentBody');
             tableBody.innerHTML = '';
