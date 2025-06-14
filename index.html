@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>等额本息贷款计算器</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+        }
+        .calculator-container {
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        .input-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        .input-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        .info-card {
+            background-color: #e8f4fc;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border-left: 4px solid #3498db;
+        }
+        .info-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2980b9;
+        }
+        .calculate-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            transition: background-color 0.3s;
+            font-weight: bold;
+        }
+        .calculate-btn:hover {
+            background-color: #2980b9;
+        }
+        .results-section {
+            margin-top: 30px;
+        }
+        .result-card {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .result-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #eee;
+        }
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .result-label {
+            font-weight: bold;
+            color: #7f8c8d;
+        }
+        .result-value {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .repayment-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .repayment-table th {
+            background-color: #3498db;
+            color: white;
+            padding: 12px;
+            text-align: center;
+            font-weight: bold;
+        }
+        .repayment-table td {
+            padding: 10px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+        .repayment-table tr:nth-child(even) {
+            background-color: #f2f7fb;
+        }
+        .repayment-table tr:hover {
+            background-color: #e3f0f7;
+        }
+        .highlight {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        .note {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>等额本息贷款计算器</h1>
+
+    <div class="calculator-container">
+        <div class="info-card">
+            <div class="info-title">贷款参数设置</div>
+            <div class="input-section">
+                <div class="input-group">
+                    <label for="loanAmount">贷款总额（元）</label>
+                    <input type="number" id="loanAmount" placeholder="例如：100000">
+                </div>
+                <div class="input-group">
+                    <label for="wanCoefficient">万元系数（元/月）</label>
+                    <input type="number" id="wanCoefficient" value="208.31" step="0.01">
+                </div>
+                <div class="input-group">
+                    <label for="annualRate">年化利率（%）</label>
+                    <input type="number" id="annualRate" value="9.15" step="0.01">
+                </div>
+            </div>
+        </div>
+        
+        <button class="calculate-btn" onclick="calculate()">计算还款计划</button>
+        
+        <div class="results-section">
+            <div class="result-card">
+                <div class="result-title">还款概览</div>
+                <div class="result-row">
+                    <span class="result-label">月还款额：</span>
+                    <span class="result-value" id="monthlyPayment">--</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">5年（60期）总利息：</span>
+                    <span class="result-value" id="fiveYearInterest">--</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">2年提前还款总利息：</span>
+                    <span class="result-value highlight" id="twoYearInterest">--</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label">2年节省利息：</span>
+                    <span class="result-value highlight" id="interestSaved">--</span>
+                </div>
+            </div>
+        </div>
+        
+        <h2 class="result-title">前2年（24期）还款明细</h2>
+        <div style="overflow-x: auto;">
+            <table class="repayment-table">
+                <thead>
+                    <tr>
+                        <th>期数</th>
+                        <th>还款日期</th>
+                        <th>月供</th>
+                        <th>本金</th>
+                        <th>利息</th>
+                        <th>剩余本金</th>
+                    </tr>
+                </thead>
+                <tbody id="repaymentBody">
+                    <tr>
+                        <td colspan="6">请输入贷款金额后点击计算</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="note">
+            <p>注：</p>
+            <p>1. 本计算器基于等额本息还款方式计算，结果仅供参考</p>
+            <p>2. 2年提前还款总利息指在前24期实际支付的利息总和</p>
+            <p>3. 实际还款金额可能因银行政策、利率调整等因素略有差异</p>
+        </div>
+    </div>
+
+    <script>
+        function calculate() {
+            const loanAmount = parseFloat(document.getElementById('loanAmount').value);
+            const wanCoefficient = parseFloat(document.getElementById('wanCoefficient').value);
+            const annualRate = parseFloat(document.getElementById('annualRate').value);
+            
+            if (isNaN(loanAmount) || isNaN(wanCoefficient) || isNaN(annualRate)) {
+                alert("请输入有效的参数值！");
+                return;
+            }
+
+            // 计算参数
+            const monthlyRate = annualRate / 100 / 12; // 月利率
+            const fiveYearMonthlyPayment = (loanAmount / 10000) * wanCoefficient; // 根据万元系数计算月供
+            
+            // 计算5年总利息
+            const fiveYearTotalPayment = fiveYearMonthlyPayment * 60;
+            const fiveYearInterest = fiveYearTotalPayment - loanAmount;
+            
+            // 计算2年还款明细和总利息
+            const twoYearDetails = calculateRepaymentDetails(loanAmount, monthlyRate, 60, wanCoefficient); // 计算60期但只显示前24期
+            const twoYearInterest = twoYearDetails.details.slice(0, 24).reduce((sum, item) => sum + item.interest, 0);
+            const interestSaved = fiveYearInterest - twoYearInterest - 
+                                twoYearDetails.details[23].balance * (fiveYearInterest / loanAmount);
+            
+            // 显示结果
+            document.getElementById('monthlyPayment').textContent = fiveYearMonthlyPayment.toFixed(2) + "元";
+            document.getElementById('fiveYearInterest').textContent = fiveYearInterest.toFixed(2) + "元";
+            document.getElementById('twoYearInterest').textContent = twoYearInterest.toFixed(2) + "元";
+            document.getElementById('interestSaved').textContent = interestSaved.toFixed(2) + "元";
+            
+            // 显示还款明细表格
+            displayRepaymentDetails(twoYearDetails.details.slice(0, 24), loanAmount);
+        }
+
+        // 计算还款明细
+        function calculateRepaymentDetails(P, r, n, wanCoefficient) {
+            const M = (P / 10000) * wanCoefficient; // 使用万元系数计算月供
+            let balance = P;
+            let totalInterest = 0;
+            const details = [];
+            const startDate = new Date();
+            
+            for (let i = 1; i <= n; i++) {
+                const interest = balance * r;
+                const principal = M - interest;
+                totalInterest += interest;
+                balance -= principal;
+                
+                // 计算还款日期
+                const paymentDate = new Date(startDate);
+                paymentDate.setMonth(startDate.getMonth() + i);
+                
+                details.push({
+                    period: i,
+                    date: paymentDate,
+                    payment: M,
+                    principal: principal,
+                    interest: interest,
+                    balance: balance > 0 ? balance : 0
+                });
+            }
+            
+            return {
+                totalInterest: totalInterest,
+                details: details
+            };
+        }
+
+        // 显示还款明细表格
+        function displayRepaymentDetails(details, loanAmount) {
+            const tableBody = document.getElementById('repaymentBody');
+            tableBody.innerHTML = '';
+            
+            details.forEach(item => {
+                const row = document.createElement('tr');
+                const dateStr = formatDate(item.date);
+                
+                // 高亮显示前2年最后一期
+                const isLast = item.period === 24;
+                const rowClass = isLast ? 'highlight' : '';
+                
+                row.innerHTML = `
+                    <td class="${rowClass}">${item.period}</td>
+                    <td>${dateStr}</td>
+                    <td>${item.payment.toFixed(2)}</td>
+                    <td>${item.principal.toFixed(2)}</td>
+                    <td>${item.interest.toFixed(2)}</td>
+                    <td>${item.balance.toFixed(2)}</td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+        }
+
+        // 格式化日期为YYYY-MM-DD
+        function formatDate(date) {
+            const year = date.getFullYear();
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const day = date.getDate().toString().padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+    </script>
+</body>
+</html>
