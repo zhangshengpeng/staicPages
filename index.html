@@ -51,7 +51,8 @@
       color: #2c3e50;
     }
 
-    input,select {
+    input,
+    select {
       width: 100%;
       padding: 10px;
       border: 1px solid #ddd;
@@ -59,8 +60,8 @@
       font-size: 16px;
       box-sizing: border-box;
     }
-    select {
-    }
+
+    select {}
 
     .info-card {
       background-color: #e8f4fc;
@@ -189,98 +190,99 @@
               <option v-for="item in carList" :value="item.name">{{ item.name }}</option>
             </select>
           </div>
+            <div class="input-group">
+              <label for="guidePrice">指导价(元)</label>
+              <input type="number" v-model="guidePrice" placeholder="例如：100000">
+            </div>
+            <div class="input-group">
+              <label for="loanAmount">优惠政策(元)</label>
+              <input type="number" v-model="discountNum" placeholder="例如：100000">
+            </div>
+            <div class="input-group">
+              <label for="wanCoefficient">裸车价(元)</label>
+              <input type="number" :value="onlyCarPrice" readonly>
+            </div>
+            <div class="input-group">
+              <label for="wanCoefficient">购置税(元)</label>
+              <input type="number" :value="taxNumber" readonly>
+            </div>
+            <div class="input-group">
+              <label for="annualRate">保险(元)</label>
+              <input type="number" v-model="insuranceNum">
+            </div>
+        </div>
+      </div>
+      <div class="info-card">
+        <div class="info-title">贷款参数设置</div>
+        <div class="input-section">
           <div class="input-group">
-            <label for="guidePrice">指导价(元)</label>
-            <input type="number" v-model="guidePrice" placeholder="例如：100000">
+            <label for="loanAmount">贷款总额（元）</label>
+            <input type="number" id="loanAmount" placeholder="例如：100000">
+            <span style="color: #aaa; font-size: 12px;">*首付10%贷款金额：{{ (onlyCarPrice * 0.9).toFixed(2) }}</span>
           </div>
           <div class="input-group">
-            <label for="loanAmount">优惠政策(元)</label>
-            <input type="number" v-model="discountNum" placeholder="例如：100000">
+            <label for="wanCoefficient">万元系数（元/月）</label>
+            <input type="number" id="wanCoefficient" value="208.31" step="0.01">
           </div>
           <div class="input-group">
-            <label for="wanCoefficient">裸车价(元)</label>
-            <input type="number" :value="onlyCarPrice" readonly>
-          </div>
-          <div class="input-group">
-            <label for="wanCoefficient">购置税(元)</label>
-            <input type="number" :value="taxNumber" readonly>
-          </div>
-          <div class="input-group">
-            <label for="annualRate">保险(元)</label>
-            <input type="number" v-model="insuranceNum">
+            <label for="annualRate">年化利率（%）</label>
+            <input type="number" id="annualRate" value="9.15" step="0.01">
           </div>
         </div>
       </div>
-    </div>
-    <div class="info-card">
-      <div class="info-title">贷款参数设置</div>
-      <div class="input-section">
-        <div class="input-group">
-          <label for="loanAmount">贷款总额（元）</label>
-          <input type="number" id="loanAmount" placeholder="例如：100000">
-          <span style="color: #aaa; font-size: 12px;">*首付85%：{{ (onlyCarPrice * 0.85).toFixed(2) }}</span>
+
+      <button class="calculate-btn" onclick="calculate()">计算还款计划</button>
+
+      <div class="results-section">
+        <div class="result-card">
+          <div class="result-title">还款概览</div>
+          <div class="result-row">
+            <span class="result-label">月还款额：</span>
+            <span class="result-value" id="monthlyPayment">--</span>
+          </div>
+          <div class="result-row">
+            <span class="result-label">5年（60期）总利息：</span>
+            <span class="result-value" id="fiveYearInterest">--</span>
+          </div>
+          <div class="result-row">
+            <span class="result-label">2年提前还款总利息：</span>
+            <span class="result-value highlight" id="twoYearInterest">--</span>
+          </div>
+          <div class="result-row">
+            <span class="result-label">2年提前还款节省利息：</span>
+            <span class="result-value highlight" id="interestSaved">--</span>
+          </div>
         </div>
-        <div class="input-group">
-          <label for="wanCoefficient">万元系数（元/月）</label>
-          <input type="number" id="wanCoefficient" value="208.31" step="0.01">
-        </div>
-        <div class="input-group">
-          <label for="annualRate">年化利率（%）</label>
-          <input type="number" id="annualRate" value="9.15" step="0.01">
-        </div>
+      </div>
+
+      <h2 class="result-title">前2年（24期）还款明细</h2>
+      <div style="overflow-x: auto;">
+        <table class="repayment-table">
+          <thead>
+            <tr>
+              <th>期数</th>
+              <th>月供</th>
+              <th>本金</th>
+              <th>利息</th>
+              <th>剩余本金</th>
+            </tr>
+          </thead>
+          <tbody id="repaymentBody">
+            <tr>
+              <td colspan="6">请输入贷款金额后点击计算</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="note">
+        <p>注：</p>
+        <p>1. 本计算器基于等额本息还款方式计算，结果仅供参考</p>
+        <p>2. 2年提前还款总利息指在前24期实际支付的利息总和</p>
+        <p>3. 实际还款金额可能因银行政策、利率调整等因素略有差异</p>
       </div>
     </div>
 
-    <button class="calculate-btn" onclick="calculate()">计算还款计划</button>
-
-    <div class="results-section">
-      <div class="result-card">
-        <div class="result-title">还款概览</div>
-        <div class="result-row">
-          <span class="result-label">月还款额：</span>
-          <span class="result-value" id="monthlyPayment">--</span>
-        </div>
-        <div class="result-row">
-          <span class="result-label">5年（60期）总利息：</span>
-          <span class="result-value" id="fiveYearInterest">--</span>
-        </div>
-        <div class="result-row">
-          <span class="result-label">2年提前还款总利息：</span>
-          <span class="result-value highlight" id="twoYearInterest">--</span>
-        </div>
-        <div class="result-row">
-          <span class="result-label">2年提前还款节省利息：</span>
-          <span class="result-value highlight" id="interestSaved">--</span>
-        </div>
-      </div>
-    </div>
-
-    <h2 class="result-title">前2年（24期）还款明细</h2>
-    <div style="overflow-x: auto;">
-      <table class="repayment-table">
-        <thead>
-          <tr>
-            <th>期数</th>
-            <th>月供</th>
-            <th>本金</th>
-            <th>利息</th>
-            <th>剩余本金</th>
-          </tr>
-        </thead>
-        <tbody id="repaymentBody">
-          <tr>
-            <td colspan="6">请输入贷款金额后点击计算</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="note">
-      <p>注：</p>
-      <p>1. 本计算器基于等额本息还款方式计算，结果仅供参考</p>
-      <p>2. 2年提前还款总利息指在前24期实际支付的利息总和</p>
-      <p>3. 实际还款金额可能因银行政策、利率调整等因素略有差异</p>
-    </div>
   </div>
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
   <script>
@@ -288,63 +290,63 @@
     function isNumber(value) {
       return typeof value === 'number' && !isNaN(value);
     }
-  createApp({
-    setup() {
-      const guidePrice = ref()
-      const discountNum = ref()
-      const insuranceNum = ref()
-      const carType = ref()
+    createApp({
+      setup() {
+        const guidePrice = ref()
+        const discountNum = ref()
+        const insuranceNum = ref()
+        const carType = ref()
 
-      const carList = reactive([
-        { name: 'A200', value: 275700, insuranceNum: 7500 },
-        { name: 'CLA', value: 309200, insuranceNum: 8000 },
-        { name: 'GLB220 动感', value: 339900, insuranceNum: 8500 },
-        { name: 'GLB220 豪华', value: 349900, insuranceNum: 8500 },
-        { name: 'GLC 260 动感', value: 427800, insuranceNum: 13000 },
-        { name: 'GLC 260 豪华', value: 455300, insuranceNum: 13000 },
-        { name: 'GLC 300 动感5座', value: 479300, insuranceNum: 13500 },
-        { name: 'GLC 300 动感7座', value: 485300, insuranceNum: 13500 },
-        { name: 'GLC 300 豪华5座', value: 525300, insuranceNum: 13500 },
-        { name: 'GLC 300 豪华7座', value: 531300, insuranceNum: 13500 },
-        { name: 'C200', value: 334800, insuranceNum: 13500 },
-        { name: 'C260', value: 356800, insuranceNum: 13500 },
-        { name: 'C350e', value: 410600, insuranceNum: 13500 },
-        { name: 'E300时尚', value: 499800, insuranceNum: 15500 },
-        { name: 'E300豪华', value: 529800, insuranceNum: 15500 },
-        { name: 'E350e', value: 538600, insuranceNum: 15500 },
-        { name: 'GLE 350动感', value: 699800, insuranceNum: 17000 },
-        { name: 'GLE 350时尚', value: 748800, insuranceNum: 17000 },
-        { name: 'GLE 450时尚', value: 839800, insuranceNum: 17000 },
-        { name: 'GLE 450动感', value: 882800, insuranceNum: 17000 },
+        const carList = reactive([
+          { name: 'A200', value: 275700, insuranceNum: 7500 },
+          { name: 'CLA', value: 309200, insuranceNum: 8000 },
+          { name: 'GLB220 动感', value: 339900, insuranceNum: 8500 },
+          { name: 'GLB220 豪华', value: 349900, insuranceNum: 8500 },
+          { name: 'GLC 260 动感', value: 427800, insuranceNum: 13000 },
+          { name: 'GLC 260 豪华', value: 455300, insuranceNum: 13000 },
+          { name: 'GLC 300 动感5座', value: 479300, insuranceNum: 13500 },
+          { name: 'GLC 300 动感7座', value: 485300, insuranceNum: 13500 },
+          { name: 'GLC 300 豪华5座', value: 525300, insuranceNum: 13500 },
+          { name: 'GLC 300 豪华7座', value: 531300, insuranceNum: 13500 },
+          { name: 'C200', value: 334800, insuranceNum: 13500 },
+          { name: 'C260', value: 356800, insuranceNum: 13500 },
+          { name: 'C350e', value: 410600, insuranceNum: 13500 },
+          { name: 'E300时尚', value: 499800, insuranceNum: 15500 },
+          { name: 'E300豪华', value: 529800, insuranceNum: 15500 },
+          { name: 'E350e', value: 538600, insuranceNum: 15500 },
+          { name: 'GLE 350动感', value: 699800, insuranceNum: 17000 },
+          { name: 'GLE 350时尚', value: 748800, insuranceNum: 17000 },
+          { name: 'GLE 450时尚', value: 839800, insuranceNum: 17000 },
+          { name: 'GLE 450动感', value: 882800, insuranceNum: 17000 },
 
-      ])
-      // 购置税
-      const taxNumber = computed(() => {
-        return (((isNumber(guidePrice.value) ? guidePrice.value : 0) - (isNumber(discountNum.value) ? discountNum.value : 0))/11.3).toFixed(2)
-      })
-      const onlyCarPrice = computed(() => {
-        return ((isNumber(guidePrice.value) ? guidePrice.value : 0) - (isNumber(discountNum.value) ? discountNum.value : 0)).toFixed(2)
-      })
-      // 刷新指导价和保险
-      function selectCar(e,v) {
-        if(carType.value) {
-          const car = carList.find(item => item.name === carType.value)
-          guidePrice.value = car.value
-          insuranceNum.value = car.insuranceNum
+        ])
+        // 购置税
+        const taxNumber = computed(() => {
+          return (((isNumber(guidePrice.value) ? guidePrice.value : 0) - (isNumber(discountNum.value) ? discountNum.value : 0)) / 11.3).toFixed(2)
+        })
+        const onlyCarPrice = computed(() => {
+          return ((isNumber(guidePrice.value) ? guidePrice.value : 0) - (isNumber(discountNum.value) ? discountNum.value : 0)).toFixed(2)
+        })
+        // 刷新指导价和保险
+        function selectCar(e, v) {
+          if (carType.value) {
+            const car = carList.find(item => item.name === carType.value)
+            guidePrice.value = car.value
+            insuranceNum.value = car.insuranceNum
+          }
+        }
+        return {
+          guidePrice,
+          discountNum,
+          taxNumber,
+          insuranceNum,
+          carType,
+          carList,
+          onlyCarPrice,
+          selectCar
         }
       }
-      return {
-        guidePrice,
-        discountNum,
-        taxNumber,
-        insuranceNum,
-        carType,
-        carList,
-        onlyCarPrice,
-        selectCar
-      }
-    }
-  }).mount('#app')
+    }).mount('#app')
     function calculate() {
       const loanAmount = parseFloat(document.getElementById('loanAmount').value);
       const wanCoefficient = parseFloat(document.getElementById('wanCoefficient').value);
@@ -378,7 +380,7 @@
       displayRepaymentDetails(twoYearDetails.details.slice(0, 24), loanAmount);
     }
 
-    // 计算还款明细11
+    // 计算还款明细
     function calculateRepaymentDetails(P, r, n, wanCoefficient) {
       const M = (P / 10000) * wanCoefficient; // 使用万元系数计算月供
       let balance = P;
