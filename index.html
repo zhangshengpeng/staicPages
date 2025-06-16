@@ -61,8 +61,6 @@
       box-sizing: border-box;
     }
 
-    select {}
-
     .info-card {
       background-color: #e8f4fc;
       padding: 15px;
@@ -210,6 +208,20 @@
               <label for="annualRate">保险(元)</label>
               <input type="number" v-model="insuranceNum">
             </div>
+            <div class="input-group">
+              <label for="maintenanceNum">保养套餐</label>
+              <select v-model="maintenanceNum">
+                <option v-for="n in (carType ? carList.find(item => item.name === carType).maintenanceList : [])" :value="n.value">{{ n.name+ ':' + n.value }}</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <label for="finalPrice">尊享上牌交车</label>
+              <input type="number" v-model="vipPrice" readonly>
+            </div>
+            <div class="input-group">
+              <label for="finalPrice">落地价(元)</label>
+              <input type="number" v-model="finalPrice" readonly>
+            </div>
         </div>
       </div>
       <div class="info-card">
@@ -296,29 +308,162 @@
         const discountNum = ref()
         const insuranceNum = ref()
         const carType = ref()
+        const maintenanceNum = ref()
+        const vipPrice = ref(2880)
 
         const carList = reactive([
-          { name: 'A200', value: 275700, insuranceNum: 7500 },
-          { name: 'CLA', value: 309200, insuranceNum: 12000 },
-          { name: 'GLB220 动感', value: 339900, insuranceNum: 8500 },
-          { name: 'GLB220 豪华', value: 349900, insuranceNum: 8500 },
-          { name: 'GLC 260 动感', value: 427800, insuranceNum: 13000 },
-          { name: 'GLC 260 豪华', value: 455300, insuranceNum: 13000 },
-          { name: 'GLC 300 动感5座', value: 479300, insuranceNum: 13000 },
-          { name: 'GLC 300 动感7座', value: 485300, insuranceNum: 13000 },
-          { name: 'GLC 300 豪华5座', value: 525300, insuranceNum: 13000 },
-          { name: 'GLC 300 豪华7座', value: 531300, insuranceNum: 13000 },
-          { name: 'C200', value: 334800, insuranceNum: 13500 },
-          { name: 'C260', value: 356800, insuranceNum: 13500 },
-          { name: 'C350e', value: 410600, insuranceNum: 13500 },
-          { name: 'E300时尚', value: 499800, insuranceNum: 15000 },
-          { name: 'E300豪华', value: 529800, insuranceNum: 17500 },
-          { name: 'E350e', value: 538600, insuranceNum: 17500 },
-          { name: 'GLE 350动感', value: 699800, insuranceNum: 16500 },
-          { name: 'GLE 350时尚', value: 748800, insuranceNum: 16500 },
-          { name: 'GLE 450时尚', value: 839800, insuranceNum: 16500 },
-          { name: 'GLE 450动感', value: 882800, insuranceNum: 16500 },
-
+          { name: 'A200', value: 275700, insuranceNum: 7500, maintenanceList: [
+            { name: '无', value: 0 },
+            { name: '1A1B', value: 2469 },
+            { name: '2A2B', value: 4929 },
+            { name: '3A3B', value: 7389 },
+            { name: '双保', value: 12600 },
+          ] },
+          { name: 'CLA', value: 309200, insuranceNum: 12000, maintenanceList: [
+            { name: '无', value: 0 },
+            { name: '1A1B', value: 2469 },
+            { name: '2A2B', value: 4929 },
+            { name: '3A3B', value: 7389 },
+            { name: '双保', value: 12600 },
+          ] },
+          { name: 'GLB220 动感', value: 339900, insuranceNum: 8500, maintenanceList: [
+            { name: '无', value: 0 },
+            { name: '1A1B', value: 2509 },
+            { name: '2A2B', value: 5019 },
+            { name: '3A3B', value: 7529 },
+            { name: '双保', value: 13000 },
+          ] },
+          { name: 'GLB220 豪华', value: 349900, insuranceNum: 8500, maintenanceList: [
+            { name: '无', value: 0 },
+            { name: '1A1B', value: 2509 },
+            { name: '2A2B', value: 5019 },
+            { name: '3A3B', value: 7529 },
+            { name: '双保', value: 13000 },
+          ] },
+          { name: 'GLC 260 动感', value: 427800, insuranceNum: 13000, maintenanceList: [
+            { name: '无', value: 0 },
+            { name: '1A1B', value: 3092 },
+            { name: '2A2B', value: 6049 },
+            { name: '3A3B', value: 9069 },
+            { name: '双保', value: 15800 },
+          ] },
+          { name: 'GLC 260 豪华', value: 455300, insuranceNum: 13000, maintenanceList: [
+            { name: '无', value: 0 },
+            { name: '1A1B', value: 3092 },
+            { name: '2A2B', value: 6049 },
+            { name: '3A3B', value: 9069 },
+            { name: '双保', value: 15800 },
+          ] },
+          { name: 'GLC 300 动感5座', value: 479300, insuranceNum: 13000, maintenanceList: [
+            { name: '无', value: 0 },
+            { name: '1A1B', value: 3092 },
+            { name: '2A2B', value: 6049 },
+            { name: '3A3B', value: 9069 },
+            { name: '双保', value: 15800 },
+          ] },
+          { name: 'GLC 300 动感7座', value: 485300, insuranceNum: 13000, maintenanceList: [
+            { name: '无', value: 0 },
+            { name: '1A1B', value: 3092 },
+            { name: '2A2B', value: 6049 },
+            { name: '3A3B', value: 9069 },
+            { name: '双保', value: 15800 },
+          ] },
+          { name: 'GLC 300 豪华5座', value: 525300, insuranceNum: 13000, maintenanceList: [
+            { name: '无', value: 0 },
+            { name: '1A1B', value: 3092 },
+            { name: '2A2B', value: 6049 },
+            { name: '3A3B', value: 9069 },
+            { name: '双保', value: 15800 },
+          ] },
+          { name: 'GLC 300 豪华7座', value: 531300, insuranceNum: 13000, maintenanceList: [
+            { name: '无', value: 0 },
+            { name: '1A1B', value: 3092 },
+            { name: '2A2B', value: 6049 },
+            { name: '3A3B', value: 9069 },
+            { name: '双保', value: 15800 },
+          ] },
+          { name: 'GLC260 Coupe', value: 489500, insuranceNum: 13000, maintenanceList: [
+            { name: '无', value: 0 },
+            { name: '1A1B', value: 3092 },
+            { name: '2A2B', value: 6049 },
+            { name: '3A3B', value: 9069 },
+            { name: '双保', value: 15800 },
+          ] },
+          { name: 'GLC300 Coupe', value: 566000, insuranceNum: 13000, maintenanceList: [
+            { name: '无', value: 0 },
+            { name: '1A1B', value: 3092 },
+            { name: '2A2B', value: 6049 },
+            { name: '3A3B', value: 9069 },
+            { name: '双保', value: 15800 },
+          ] },
+          { name: 'C200', value: 334800, insuranceNum: 13500, maintenanceList: [
+            { name: '无', value: 0 },
+            { name: '1A1B', value: 2889 },
+            { name: '2A2B', value: 5779 },
+            { name: '3A3B', value: 8669 },
+            { name: '双保', value: 15200 },
+          ] },
+          { name: 'C260', value: 356800, insuranceNum: 13500, maintenanceList: [
+            { name: '无', value: 0 },
+            { name: '1A1B', value: 2889 },
+            { name: '2A2B', value: 5779 },
+            { name: '3A3B', value: 8669 },
+            { name: '双保', value: 15200 },
+          ] },
+          { name: 'C350e', value: 410600, insuranceNum: 13500, maintenanceList: [
+            { name: '无', value: 0 },
+            { name: '1A1B', value: 3629 },
+            { name: '2A2B', value: 7249 },
+            { name: '3A3B', value: 10869 },
+          ] },
+          { name: 'E300时尚', value: 499800, insuranceNum: 15000, maintenanceList: [
+            { name: '无', value: 0 },
+            { name: '1A1B', value: 3369 },
+            { name: '2A2B', value: 6729 },
+            { name: '3A3B', value: 10089 },
+            { name: '双保', value: 17500 },
+          ] },
+          { name: 'E300豪华', value: 529800, insuranceNum: 17500, maintenanceList: [
+            { name: '无', value: 0 },
+            { name: '1A1B', value: 3369 },
+            { name: '2A2B', value: 6729 },
+            { name: '3A3B', value: 10089 },
+            { name: '双保', value: 17500 },
+          ] },
+          { name: 'E350e', value: 538600, insuranceNum: 17500, maintenanceList: [
+            { name: '无', value: 0 },
+            { name: '1A1B', value: 3949 },
+            { name: '2A2B', value: 7899 },
+            { name: '3A3B', value: 11839 },
+          ] },
+          { name: 'GLE 350动感', value: 699800, insuranceNum: 16500, maintenanceList: [
+            { name: '无', value: 0 },
+            { name: '1A1B', value: 3939 },
+            { name: '2A2B', value: 7869 },
+            { name: '3A3B', value: 11799 },
+            { name: '双保', value: 21800 },
+          ] },
+          { name: 'GLE 350时尚', value: 748800, insuranceNum: 16500, maintenanceList: [
+            { name: '无', value: 0 },
+            { name: '1A1B', value: 3939 },
+            { name: '2A2B', value: 7869 },
+            { name: '3A3B', value: 11799 },
+            { name: '双保', value: 21800 },
+          ] },
+          { name: 'GLE 450时尚', value: 839800, insuranceNum: 16500, maintenanceList: [
+            { name: '无', value: 0 },
+            { name: '1A1B', value: 3069 },
+            { name: '2A2B', value: 6129 },
+            { name: '3A3B', value: 9199 },
+            { name: '双保', value: 24800 },
+          ] },
+          { name: 'GLE 450动感', value: 882800, insuranceNum: 16500, maintenanceList: [
+            { name: '无', value: 0 },
+            { name: '1A1B', value: 3069 },
+            { name: '2A2B', value: 6129 },
+            { name: '3A3B', value: 9199 },
+            { name: '双保', value: 24800 },
+          ] },
         ])
         // 购置税
         const taxNumber = computed(() => {
@@ -333,16 +478,24 @@
             const car = carList.find(item => item.name === carType.value)
             guidePrice.value = car.value
             insuranceNum.value = car.insuranceNum
+            maintenanceNum.value = ''
           }
         }
+        const finalPrice = computed(() => {
+          console.log(onlyCarPrice.value , taxNumber.value , insuranceNum.value , maintenanceNum.value)
+          return (Number(onlyCarPrice.value) + Number(taxNumber.value) + Number(insuranceNum.value) + Number(maintenanceNum.value) + Number(vipPrice.value)).toFixed(2)
+        })
         return {
           guidePrice,
           discountNum,
           taxNumber,
           insuranceNum,
+          maintenanceNum,
+          finalPrice,
           carType,
           carList,
           onlyCarPrice,
+          vipPrice,
           selectCar
         }
       }
