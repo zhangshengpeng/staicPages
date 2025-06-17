@@ -215,6 +215,10 @@
               </select>
             </div>
             <div class="input-group">
+              <label for="finalPrice">精品(元)</label>
+              <input type="number" v-model="decoratePrice">
+            </div>
+            <div class="input-group">
               <label for="finalPrice">尊享上牌交车</label>
               <input type="number" v-model="vipPrice" readonly>
             </div>
@@ -310,6 +314,7 @@
         const carType = ref()
         const maintenanceNum = ref()
         const vipPrice = ref(2880)
+        const decoratePrice = ref(0)
 
         const carList = reactive([
           { name: 'A200', value: 275700, insuranceNum: 7500, maintenanceList: [
@@ -483,19 +488,27 @@
         }
         const finalPrice = computed(() => {
           console.log(onlyCarPrice.value , taxNumber.value , insuranceNum.value , maintenanceNum.value)
-          return (Number(onlyCarPrice.value) + Number(taxNumber.value) + Number(insuranceNum.value) + Number(maintenanceNum.value) + Number(vipPrice.value)).toFixed(2)
+          return (
+            Number(onlyCarPrice.value)
+            + Number(taxNumber.value)
+            + Number(insuranceNum.value)
+            + Number(maintenanceNum.value)
+            + Number(vipPrice.value)
+            + Number(decoratePrice.value)
+          ).toFixed(2)
         })
         return {
           guidePrice,
-          discountNum,
-          taxNumber,
-          insuranceNum,
-          maintenanceNum,
-          finalPrice,
-          carType,
+          discountNum,//  优惠
+          taxNumber, // 购置税
+          insuranceNum, // 保险
+          maintenanceNum, // 保养
+          finalPrice, // 落地价
+          carType, // 车型
           carList,
-          onlyCarPrice,
-          vipPrice,
+          onlyCarPrice, // 裸车价
+          vipPrice, // 上牌费
+          decoratePrice, // 精品价
           selectCar
         }
       }
