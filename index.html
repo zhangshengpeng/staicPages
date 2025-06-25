@@ -193,8 +193,8 @@
               <input type="number" v-model="guidePrice" placeholder="例如：100000">
             </div>
             <div class="input-group">
-              <label for="loanAmount">优惠政策(元)</label>
-              <input type="number" v-model="discountNum" placeholder="例如：100000">
+              <label for="discountNum">优惠政策(万元)</label>
+              <input type="number" v-model="discountNum" placeholder="例如：10">
             </div>
             <div class="input-group">
               <label for="wanCoefficient">裸车价(元)</label>
@@ -232,9 +232,9 @@
         <div class="info-title">贷款参数设置</div>
         <div class="input-section">
           <div class="input-group">
-            <label for="loanAmount">贷款总额（元）</label>
-            <input type="number" id="loanAmount" placeholder="例如：100000">
-            <span style="color: #aaa; font-size: 12px;">*首付10%贷款金额：{{ (onlyCarPrice * 0.9).toFixed(2) }}</span>
+            <label for="loanAmount">贷款总额（万元）</label>
+            <input type="number" id="loanAmount" placeholder="例如：10">
+            <span style="color: #aaa; font-size: 12px;">*首付20%贷款金额：{{ (onlyCarPrice * 0.8).toFixed(2) }}</span>
           </div>
           <div class="input-group">
             <label for="wanCoefficient">万元系数（元/月）</label>
@@ -472,10 +472,10 @@
         ])
         // 购置税
         const taxNumber = computed(() => {
-          return (((isNumber(guidePrice.value) ? guidePrice.value : 0) - (isNumber(discountNum.value) ? discountNum.value : 0)) / 11.3).toFixed(2)
+          return (((isNumber(guidePrice.value) ? guidePrice.value : 0) - (isNumber(discountNum.value) ? discountNum.value * 10000 : 0)) / 11.3).toFixed(2)
         })
         const onlyCarPrice = computed(() => {
-          return ((isNumber(guidePrice.value) ? guidePrice.value : 0) - (isNumber(discountNum.value) ? discountNum.value : 0)).toFixed(2)
+          return ((isNumber(guidePrice.value) ? guidePrice.value : 0) - (isNumber(discountNum.value) ? discountNum.value * 10000 : 0)).toFixed(2)
         })
         // 刷新指导价和保险
         function selectCar(e, v) {
@@ -525,14 +525,14 @@
 
       // 计算参数
       const monthlyRate = annualRate / 100 / 12; // 月利率
-      const fiveYearMonthlyPayment = (loanAmount / 10000) * wanCoefficient; // 根据万元系数计算月供
+      const fiveYearMonthlyPayment = loanAmount * wanCoefficient; // 根据万元系数计算月供
 
       // 计算5年总利息
       const fiveYearTotalPayment = fiveYearMonthlyPayment * 60;
-      const fiveYearInterest = fiveYearTotalPayment - loanAmount;
+      const fiveYearInterest = fiveYearTotalPayment - (loanAmount * 10000);
 
       // 计算2年还款明细和总利息
-      const twoYearDetails = calculateRepaymentDetails(loanAmount, monthlyRate, 60, wanCoefficient); // 计算60期但只显示前24期
+      const twoYearDetails = calculateRepaymentDetails((loanAmount * 10000), monthlyRate, 60, wanCoefficient); // 计算60期但只显示前24期
       const twoYearInterest = twoYearDetails.details.slice(0, 24).reduce((sum, item) => sum + item.interest, 0);
       const interestSaved = fiveYearInterest - twoYearInterest
 
@@ -543,7 +543,7 @@
       document.getElementById('interestSaved').textContent = interestSaved.toFixed(2) + "元";
 
       // 显示还款明细表格
-      displayRepaymentDetails(twoYearDetails.details.slice(0, 24), loanAmount);
+      displayRepaymentDetails(twoYearDetails.details.slice(0, 24), (loanAmount * 10000));
     }
 
     // 计算还款明细
